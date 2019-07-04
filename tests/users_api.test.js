@@ -71,6 +71,48 @@ describe('HTTP POST -tests', () => {
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd.length).toBe(usersAtStart.length)
   })
+
+  test('can not add user if username not valid name', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'ro',
+      name: 'root user',
+      password: 'salsasanoitus'
+    }
+
+    const res = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('User validation failed: username: Path `username` (`ro`) is shorter than the minimum allowed length (3).')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd.length).toBe(usersAtStart.length)
+  })
+
+  test('can not add user if password not valid name', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: 'teppo',
+      name: 'Teppo Tulppu',
+      password: 'sa'
+    }
+
+    const res = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('password must be atleast 3 chars')
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd.length).toBe(usersAtStart.length)
+  })
 })
 
 
