@@ -118,6 +118,59 @@ describe('HTTP POST -tests', () => {
   })
 })
 
+describe('HTTP DELETE -tests', () => {
+  test('deleting id is okay', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const idToBeRemoved = blogsAtStart[0].id
+
+    await api
+      .delete(`/api/blogs/${idToBeRemoved}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd.length).toBe(helper.initialBlogs.length - 1)
+  })
+})
+
+describe('HTTP PUT -tests', () => {
+  test('updating id is okay', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const idToBeUpdated = blogsAtStart[0].id
+
+    const updateBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: 10
+    }
+
+    await api
+      .put(`/api/blogs/${idToBeUpdated}`)
+      .send(updateBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+      .expect(res => {
+        res.body.likes = updateBlog.likes
+      })
+  })
+
+  test('updating not existing id throws 400 bad req', async () => {
+    const id = helper.nonExistingId
+    
+    const updateBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: 10
+    }
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(updateBlog)
+      .expect(404)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
