@@ -11,14 +11,13 @@ blogsRouter.get('/', async (req, res) => {
   
 blogsRouter.post('/', async (req, res, next) => {
   const body = req.body
-
   const user = await User.findById(body.userId)
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    user: user._id
+    user: user.id
   })
 
   if(blog.likes === undefined){

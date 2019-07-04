@@ -93,7 +93,7 @@ describe('HTTP POST -tests', () => {
     expect(usersAtEnd.length).toBe(usersAtStart.length)
   })
 
-  test('can not add user if password not valid name', async () => {
+  test('can not add user if password not valid', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {

@@ -5,5 +5,6 @@ Content-Type: application/json
     "title": "Testing new blogs 2",
     "author": "mluukkai",
     "url": "https://fullstackopen.com",
-    "likes": 1
+    "likes": 1,
+    "userId": "5d1e3ba48d563f1afaf68730"
 }

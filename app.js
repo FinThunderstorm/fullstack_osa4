@@ -25,7 +25,7 @@ app.use(morgan('dev', {
   skip: (req, res) => { return res.statusCode !== 400 }
 }))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body', {
-  skip: (req,res) => { return res.statusCode === 400 }
+  //skip: (req,res) => { return res.statusCode === 400 }
 }))
 
 app.use(cors())
