@@ -20,7 +20,7 @@ describe('HTTP POST -tests', () => {
   test('login succesfull with right data', async () => {
     const loginUser = {
       username: 'root',
-      password: 'password'
+      password: 'root'
     }
   
     await api

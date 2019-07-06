@@ -1,6 +1,16 @@
+/* eslint-disable no-undef */
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+const getTokenFrom = req => {
+  const auth = req.get('authorization')
+  if(auth && auth.toLowerCase().startsWith('bearer')){
+    return auth.substring(7)
+  }
+  return null
+}
 
 blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog
@@ -11,27 +21,35 @@ blogsRouter.get('/', async (req, res) => {
   
 blogsRouter.post('/', async (req, res, next) => {
   const body = req.body
-  const user = await User.findById(body.userId)
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    user: user.id
-  })
-
-  if(blog.likes === undefined){
-    blog.likes = 0
-  } else {
-    blog.likes = body.likes
-  }
-
-  if(blog.title === undefined || blog.url === undefined) {
-    return res.status(400).json({
-      error: 'title or url missing'
-    })
-  }
+  const token = getTokenFrom(req)
+    
   try{
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if(!token || !decodedToken.id) {
+      return res.status(401).json({ error: 'token missing or invalid'})
+    }
+
+    const user = await User.findById(decodedToken.id)
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      user: user.id
+    })
+  
+    if(blog.likes === undefined){
+      blog.likes = 0
+    } else {
+      blog.likes = body.likes
+    }
+  
+    if(blog.title === undefined || blog.url === undefined) {
+      return res.status(400).json({
+        error: 'title or url missing'
+      })
+    }
+
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
