@@ -42,9 +42,35 @@ const mostBlogs = (blogs) => {
   return most[0]
 }
 
+const mostLikes = (blogs) => {
+  const writers = []
+  blogs.map((a) => {
+    var loytyyko = []
+    for(const writer of writers){
+      if(writer.author === a.author){
+        loytyyko.push(true)
+      }
+    }
+    if(loytyyko.length === 0){
+      const talleta = {
+        author: a.author,
+        likes: a.likes
+      }
+      writers.push(talleta)
+    } else{
+      const id = writers.findIndex(b => a.author === b.author)
+      writers[id].likes = writers[id].likes + a.likes
+    }
+  })
+  writers.sort((a,b) => b.likes-a.likes)
+  const most = writers.filter(a => a.likes === writers[0].likes)
+  return most[0]
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
